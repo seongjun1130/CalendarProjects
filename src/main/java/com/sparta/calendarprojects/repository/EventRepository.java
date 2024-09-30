@@ -8,10 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,13 +50,13 @@ public class EventRepository {
         return jdbcTemplate.query(sql, new RowMapper<EventResponseDto>() {
             @Override
             public EventResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-                // SQL 의 결과로 받아온 Memo 데이터들을 MemoResponseDto 타입으로 변환해줄 메서드
+                // SQL 의 결과로 받아온 Memo 데이터들을 EventResponseDto 타입으로 변환해줄 메서드
                 Long id = rs.getLong("id");
                 String todo = rs.getString("todo");
-                String createddate = rs.getString("createddate");
-                String modifieddate = rs.getString("modifieddate");
-                String startday = rs.getString("startday");
-                String endday = rs.getString("endday");
+                java.sql.Timestamp createddate = rs.getTimestamp("createddate");
+                java.sql.Timestamp modifieddate = rs.getTimestamp("modifieddate");
+                java.sql.Date startday = rs.getDate("startday");
+                java.sql.Date endday = rs.getDate("endday");
                 String creator = rs.getString("creator");
                 return new EventResponseDto(id, todo, createddate, modifieddate, startday, endday, creator);
             }

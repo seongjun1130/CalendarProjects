@@ -1,9 +1,13 @@
 package com.sparta.calendarprojects.dto;
 
 import com.sparta.calendarprojects.entity.Event;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class EventResponseDto {
     private Long id;
     private String creator;
@@ -25,7 +29,14 @@ public class EventResponseDto {
         this.endday = event.getEndday();
     }
 
-    public EventResponseDto(Long id, String todo, String createddate, String modifieddate, String startday, String endday, String creator) {
-        super();
+    public EventResponseDto(Long id, String todo, java.sql.Timestamp createddate, java.sql.Timestamp modifieddate, java.sql.Date startday, java.sql.Date endday, String creator) {
+        this.id = id;
+        this.todo = todo;
+        this.createddate = createddate;
+        this.modifieddate = modifieddate;
+        this.startday = startday;
+        this.endday = endday;
+        this.creator = creator;
     }
+
 }

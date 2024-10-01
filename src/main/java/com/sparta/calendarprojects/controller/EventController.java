@@ -31,8 +31,22 @@ public class EventController {
     }
 
     // ID 값을 기준으로 정보를 조회하는 컨트롤러 메소드.
-    @GetMapping("/schedul/{id}")
-    public EventResponseDto getEventById(@PathVariable Long id) {
-        return eventService.getEvent(id);
+    @GetMapping("/schedul/id/")
+    public EventResponseDto getEventById(@RequestParam Long id) {
+        return eventService.getEventById(id);
+    }
+
+    // ID 값을 기준으로 정보를 수정하는 컨트롤러 메소드
+    // DTO 를 Body 로 받는 이유는 URL 이 아닌 Body 로 받으면서 보안성 향상.
+    @PutMapping("/schedul/")
+    public Long updateEvent(@RequestParam Long id, @RequestBody EventRequestDto requestDto) {
+        return eventService.updateEvent(id, requestDto);
+    }
+
+    // ID 값을 기준으로 정보를 삭제하는 컨트롤러 메소드
+    // DTO 를 Body 로 받는 이유는 URL 이 아닌 Body 로 받으면서 보안성 향상.
+    @DeleteMapping("/schedul/")
+    public Long deleteEvent(@RequestParam Long id, @RequestBody EventRequestDto requestDto) {
+        return eventService.deleteEvent(id, requestDto);
     }
 }

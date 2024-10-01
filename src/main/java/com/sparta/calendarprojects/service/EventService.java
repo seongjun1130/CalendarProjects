@@ -4,7 +4,6 @@ import com.sparta.calendarprojects.dto.EventRequestDto;
 import com.sparta.calendarprojects.dto.EventResponseDto;
 import com.sparta.calendarprojects.entity.Event;
 import com.sparta.calendarprojects.repository.EventRepository;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,12 +33,43 @@ public class EventService {
         return eventRepository.findAll(creator, modifieddate);
     }
 
-    // 해당 일정 ID의 정보를 조회.
-    public EventResponseDto getEvent(Long id) {
+    // 해당 일정 ID의 정보 조회 메소드.
+    public EventResponseDto getEventById(Long id) {
         Event event = eventRepository.findId(id);
         if (event != null) {
             return new EventResponseDto(event);
+        } else {
+            throw new IllegalArgumentException("선택한 일정은 존재하지 않습니다");
         }
-        throw new IllegalArgumentException("선택한 일정은 존재하지 않습니다");
+    }
+
+    // ID 기준의 DB 수정 메소드
+    public Long updateEvent(Long id, EventRequestDto requestDto) {
+        Event event = eventRepository.findId(id);
+        // 해당 ID가 존재하면서 게시글 비밀번호와 동일한 시 정보 수정
+        if (event != null) if (requestDto.getPassword().equals(event.getPassword())) {
+            eventRepository.update(id, requestDto);
+            return id;
+        } else {
+            throw new RuntimeException("비밀번호가 맞지 않습니다.");
+        }
+        else {
+            throw new IllegalArgumentException("선택한 일정은 존재하지 않습니다");
+        }
+    }
+
+    // ID 기준의 DB 삭제 메소드
+    public Long deleteEvent(Long id, EventRequestDto requestDto) {
+        Event event = eventRepository.findId(id);
+        // 해당 ID가 존재하면서 게시글 비밀번호와 동일한 시 정보 삭제
+        if (event != null) if (requestDto.getPassword().equals(event.getPassword())) {
+            eventRepository.delete(id);
+            return id;
+        } else {
+            throw new RuntimeException("비밀번호가 맞지 않습니다.");
+        }
+        else {
+            throw new IllegalArgumentException("선택한 일정은 존재하지 않습니다");
+        }
     }
 }

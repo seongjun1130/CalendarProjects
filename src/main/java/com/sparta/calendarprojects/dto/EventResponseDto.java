@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,7 +15,6 @@ public class EventResponseDto {
     private Long id;
     private String creator;
     private String todo;
-    private String password;
     private java.sql.Timestamp createddate;
     private java.sql.Timestamp modifieddate;
     private java.sql.Date startday;
@@ -22,14 +24,13 @@ public class EventResponseDto {
         this.id = event.getId();
         this.creator = event.getCreator();
         this.todo = event.getTodo();
-        this.password = event.getPassword();
         this.createddate = event.getCreateddate();
         this.modifieddate = event.getModifieddate();
         this.startday = event.getStartday();
         this.endday = event.getEndday();
     }
 
-    public EventResponseDto(Long id, String todo, java.sql.Timestamp createddate, java.sql.Timestamp modifieddate, java.sql.Date startday, java.sql.Date endday, String creator) {
+    public EventResponseDto(Long id, String todo, Timestamp createddate, Timestamp modifieddate, Date startday, Date endday, String creator) {
         this.id = id;
         this.todo = todo;
         this.createddate = createddate;
@@ -38,5 +39,4 @@ public class EventResponseDto {
         this.endday = endday;
         this.creator = creator;
     }
-
 }

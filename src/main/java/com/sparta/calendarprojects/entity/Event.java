@@ -3,8 +3,10 @@ package com.sparta.calendarprojects.entity;
 import com.sparta.calendarprojects.dto.EventRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
+@NonNull
 @Getter
 @Setter
 @NoArgsConstructor

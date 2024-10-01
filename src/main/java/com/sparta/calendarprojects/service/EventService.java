@@ -10,15 +10,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+// 일정관련 비즈니스 로직을 지닌 서비스 클래스
 public class EventService {
-    private final JdbcTemplate jdbcTemplate;
     private final EventRepository eventRepository;
 
-    public EventService(JdbcTemplate jdbcTemplate, EventRepository eventRepository) {
-        this.jdbcTemplate = jdbcTemplate;
+    // DI 생성자주입.
+    public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 
+    // 일정 생성 메소드.
     public EventResponseDto createEvent(EventRequestDto requestDto) {
         // RequestDto -> Entity
         Event event = new Event(requestDto);
@@ -28,8 +29,17 @@ public class EventService {
         return new EventResponseDto(saveEvent);
     }
 
-    public List<EventResponseDto> getEvent() {
-        // DB 조회
-        return eventRepository.findAll();
+    // 일정 조회 메소드. 파라미터 여부에 따른 결과가 달라짐.
+    public List<EventResponseDto> getEventAll(String creator, String modifieddate) {
+        return eventRepository.findAll(creator, modifieddate);
+    }
+
+    // 해당 일정 ID의 정보를 조회.
+    public EventResponseDto getEvent(Long id) {
+        Event event = eventRepository.findId(id);
+        if (event != null) {
+            return new EventResponseDto(event);
+        }
+        throw new IllegalArgumentException("선택한 일정은 존재하지 않습니다");
     }
 }

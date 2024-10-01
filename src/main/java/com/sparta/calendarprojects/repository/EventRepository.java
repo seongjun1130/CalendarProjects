@@ -50,7 +50,6 @@ public class EventRepository {
         return event;
     }
 
-
     // Client 에서 보내온 파라미터값에 따른 DB 조회 메소드
     // 조건에 따른 WHERE 절 변화
     public List<EventResponseDto> findAll(String creator, String modifieddate) {

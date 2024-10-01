@@ -6,10 +6,13 @@ import com.sparta.calendarprojects.service.EventService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+
+// 일정 관련 정보를 조회하는 컨트롤러.
 @RestController
 @RequestMapping("/event")
-// 일정 관련 정보를 조회하는 컨트롤러.
 public class EventController {
     private final EventService eventService;
 

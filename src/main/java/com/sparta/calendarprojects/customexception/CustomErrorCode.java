@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 public enum CustomErrorCode {
     PASSWORD_EXCEPTION("비밀번호가 일치하지않습니다."),
     END_DATE_BEFORE_START_DATE("일정 종료일자가 시작일자보다 빠릅니다."),
-    NULL_INPUT("입력을 하지 않은 값이 존재합니다.");
+    NULL_INPUT("입력을 하지 않은 값이 존재합니다. 모든값을 입력하세요."),
+    OUT_OF_RANGE("선택한 ID 값의 일정이 존재하지 않습니다.");
 
     private String statusMessage;
 

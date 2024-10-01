@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CustomExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public CustomErrorResponse handleCustomException(CustomException e, HttpServletRequest request) {
-        log.error("ettotCode : {}, url {}, messager: {}", e.getCustomErrorCode(), request.getRequestURL(), e.getDetailMessage());
-        return CustomErrorResponse.builder().status(e.getCustomErrorCode()).statusMessage(e.getDetailMessage()).build();
+        log.error("errorCode : {}, url : {}, message: {}, HttpStatus : {}", e.getCustomErrorCode(), request.getRequestURL(), e.getDetailMessage(), e.getHttpStatus());
+        return CustomErrorResponse.builder().status(e.getCustomErrorCode()).statusMessage(e.getDetailMessage()).httpStatus(e.getHttpStatus()).build();
     }
 }

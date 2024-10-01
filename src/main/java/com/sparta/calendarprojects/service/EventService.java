@@ -1,6 +1,5 @@
 package com.sparta.calendarprojects.service;
 
-import com.sparta.calendarprojects.customexception.CustomErrorCode;
 import com.sparta.calendarprojects.customexception.CustomException;
 import com.sparta.calendarprojects.dto.EventRequestDto;
 import com.sparta.calendarprojects.dto.EventResponseDto;
@@ -8,7 +7,6 @@ import com.sparta.calendarprojects.entity.Event;
 import com.sparta.calendarprojects.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -58,7 +56,7 @@ public class EventService {
         if (event != null) {
             return new EventResponseDto(event);
         } else {
-            throw new IllegalArgumentException("선택한 일정은 존재하지 않습니다");
+            throw new CustomException(OUT_OF_RANGE);
         }
     }
 
@@ -78,7 +76,7 @@ public class EventService {
             throw new CustomException(PASSWORD_EXCEPTION);
         }
         else {
-            throw new IllegalArgumentException("선택한 일정은 존재하지 않습니다");
+            throw new CustomException(OUT_OF_RANGE);
         }
     }
 
@@ -93,7 +91,7 @@ public class EventService {
             throw new CustomException(PASSWORD_EXCEPTION);
         }
         else {
-            throw new IllegalArgumentException("선택한 일정은 존재하지 않습니다");
+            throw new CustomException(OUT_OF_RANGE);
         }
     }
 

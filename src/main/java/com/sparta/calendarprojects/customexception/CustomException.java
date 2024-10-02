@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+// 사용자예외를 발생시키기 위한 예외 클래스
 public class CustomException extends RuntimeException {
     private CustomErrorCode customErrorCode;
     private String detailMessage;

@@ -2,12 +2,19 @@ package com.sparta.calendarprojects.controller;
 
 import com.sparta.calendarprojects.dto.EventRequestDto;
 import com.sparta.calendarprojects.dto.EventResponseDto;
+import com.sparta.calendarprojects.dto.PageResponseDto;
+import com.sparta.calendarprojects.entity.Event;
+import com.sparta.calendarprojects.info.PageInfo;
+import com.sparta.calendarprojects.mapper.EventMapper;
 import com.sparta.calendarprojects.service.EventService;
+import jakarta.validation.constraints.Positive;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Member;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 
 // 일정 관련 정보를 조회하는 컨트롤러.
@@ -15,10 +22,22 @@ import java.util.stream.Stream;
 @RequestMapping("/event")
 public class EventController {
     private final EventService eventService;
+    private final EventMapper eventMapper;
 
     // DI 생성자주입
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, EventMapper eventMapper) {
         this.eventService = eventService;
+        this.eventMapper = eventMapper;
+    }
+
+    // Paging 기능을 이용한 전체일정 조회 컨트롤러 메소드
+    @GetMapping("/schedul/page/")
+    public ResponseEntity getAllEventsPage(@Positive @RequestParam int page, @Positive @RequestParam int size) {
+        Page<Event> eventsPage = eventService.findPageEvents(page - 1, size);
+        PageInfo pageInfo = new PageInfo(page, size, (int) eventsPage.getTotalElements(), eventsPage.getTotalPages());
+        List<Event> events = eventsPage.getContent();
+        List<EventResponseDto> respones = eventMapper.eventsToEventResponseDtos(events);
+        return new ResponseEntity<>(new PageResponseDto(respones, pageInfo), HttpStatus.OK);
     }
 
     // 일정을 생성하는 컨트롤러 메소드

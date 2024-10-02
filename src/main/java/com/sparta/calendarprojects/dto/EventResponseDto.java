@@ -2,6 +2,7 @@ package com.sparta.calendarprojects.dto;
 
 import com.sparta.calendarprojects.entity.Event;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class EventResponseDto {
     private Long id;
     private Long user_id;

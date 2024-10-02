@@ -5,10 +5,14 @@ import com.sparta.calendarprojects.dto.EventRequestDto;
 import com.sparta.calendarprojects.dto.EventResponseDto;
 import com.sparta.calendarprojects.entity.Event;
 import com.sparta.calendarprojects.entity.User;
+import com.sparta.calendarprojects.repository.EventPageRepository;
 import com.sparta.calendarprojects.repository.EventRepository;
 import com.sparta.calendarprojects.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Member;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -23,20 +27,32 @@ import static com.sparta.calendarprojects.customexception.CustomErrorCode.*;
 public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final EventPageRepository eventPageRepository;
 
     // DI 생성자주입.
-    public EventService(EventRepository eventRepository, UserRepository userRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, EventPageRepository eventPageRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.eventPageRepository = eventPageRepository;
+    }
+
+    // 전달받은 page,size 파라미터를 적용하여 객체를 생성
+    public Page<Event> findPageEvents(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return eventPageRepository.findAllByOrderByIdDesc(pageRequest);
     }
 
     // 일정 생성 메소드.
     public EventResponseDto createEvent(EventRequestDto requestDto) {
         boolean checkNotNull = Stream.of(requestDto.getTodo(), requestDto.getUser_id(), requestDto.getPassword(), requestDto.getStartday(), requestDto.getEndday()).allMatch(Objects::nonNull);
         User userinfo = userRepository.findId(requestDto.getUser_id());
+        // 해당 유저가 존재하지 않는 경우
         if (userinfo != null) {
+            // 사용자가 NULL 값을 입력 했을 경우
             if (checkNotNull) {
+                // 해당 일자가 유효한지 검사 (Ex : 2024-02-30(false))
                 if (formatCheck(String.valueOf(requestDto.getStartday())) && formatCheck(String.valueOf(requestDto.getEndday()))) {
+                    // 일정종료일이 시작일 보다 빠를경우 (Ex : 2024-09-30 ~ 2024-08-30)
                     if (requestDto.getStartday().before(requestDto.getEndday())) {
                         // RequestDto -> Entity
                         Event event = new Event(requestDto);
@@ -66,6 +82,7 @@ public class EventService {
     // 해당 일정 ID의 정보 조회 메소드.
     public EventResponseDto getEventById(Long id) {
         Event event = eventRepository.findId(id);
+        // 해당 일정이 존재하지 않을 경우
         if (event != null) {
             return new EventResponseDto(event);
         } else {
@@ -77,12 +94,17 @@ public class EventService {
     public Long updateEvent(Long id, EventRequestDto requestDto) {
         boolean checkNotNull = Stream.of(requestDto.getTodo(), requestDto.getUser_id(), requestDto.getPassword(), requestDto.getStartday(), requestDto.getEndday()).allMatch(Objects::nonNull);
         Event event = eventRepository.findId(id);
+        // 글을 작성한 유저가 접근했는지 검사하기위한 UserInfo 객체 생성
         User userinfo = userRepository.findId(requestDto.getUser_id());
-        // 해당 ID가 존재하면서 게시글 비밀번호와 동일한 시 정보 수정
+        // 해당 ID 일정이 존재하는 경우
         if (event != null) {
+            // 사용자가 NULL 값 을 입력했는지
             if (checkNotNull) {
+                // 접근 User 가 일정을 작성한 유저 이면서 게시글에 대한 비밀번호가 일치하는지?
                 if (requestDto.getPassword().equals(event.getPassword()) && userinfo.getId().equals(event.getUser_id())) {
+                    // 해당 일자가 유효한지 검사 (Ex : 2024-02-30(false))
                     if (formatCheck(String.valueOf(requestDto.getStartday())) && formatCheck(String.valueOf(requestDto.getEndday()))) {
+                        // 일정종료일이 시작일 보다 빠를경우 (Ex : 2024-09-30 ~ 2024-08-30)
                         if (requestDto.getStartday().before(requestDto.getEndday())) {
                             eventRepository.update(id, requestDto);
                             return id;
@@ -107,8 +129,9 @@ public class EventService {
     public Long deleteEvent(Long id, EventRequestDto requestDto) {
         Event event = eventRepository.findId(id);
         User userinfo = userRepository.findId(requestDto.getUser_id());
-        // 해당 ID가 존재하면서 게시글 비밀번호와 동일한 시 정보 삭제
+        // 해당 일정 ID가 존재하는지?
         if (event != null)
+            // 접근한 User 가 일정을 작성한 User 이면서 비밀번호가 일치하는지?
             if (requestDto.getPassword().equals(event.getPassword()) && userinfo.getId().equals(event.getUser_id())) {
                 eventRepository.delete(id);
                 return id;
@@ -133,4 +156,6 @@ public class EventService {
             return false;
         }
     }
+
+
 }

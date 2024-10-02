@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public enum CustomErrorCode {
+    // 예외 처리를 위한 eunm 객체 속성 생성.
     USER_INFO_MISMATCH("유저정보가 일치하지않습니다."),
     END_DATE_BEFORE_START_DATE("일정 종료일자가 시작일자보다 빠릅니다."),
     NULL_INPUT("입력을 하지 않은 값이 존재합니다. 모든값을 입력하세요."),
@@ -16,6 +17,7 @@ public enum CustomErrorCode {
 
     private String statusMessage;
 
+    // 예외 발생시 Message 출력을 위한 생성자
     CustomErrorCode(String statusMessage) {
         this.statusMessage = statusMessage;
     }

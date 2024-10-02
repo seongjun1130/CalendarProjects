@@ -18,6 +18,7 @@ import java.util.List;
 public class EventRepository {
     private final JdbcTemplate jdbcTemplate;
 
+
     public EventRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -43,7 +44,7 @@ public class EventRepository {
                     return preparedStatement;
                 },
                 keyHolder);
-        // DB Insert 후 받아온 기본키 및 생성/수정시간 확인
+        // DB Insert 후 받아온 기본키 및 생성/수정시간 삽입
         Long id = keyHolder.getKey().longValue();
         event.setId(id);
         event.setCreateddate(timeNow);
@@ -57,7 +58,7 @@ public class EventRepository {
     public List<EventResponseDto> findAll(Long user_id, String modifieddate) {
         // 둘다 기입하지 않았을시 모든 일정 조회
         String sql = "SELECT * FROM event";
-        // 작성자, 수정일을 둘다 기입했을시.
+        // 작성자 ID, 수정일을 둘다 기입했을시.
         if (user_id != null && modifieddate != null) {
             sql += " WHERE user_id = " + user_id + " OR date_format(modifieddate,'%Y-%m-%d') = " + "'" + modifieddate + "'";
         }
@@ -65,7 +66,7 @@ public class EventRepository {
         else if (modifieddate != null) {
             sql += " WHERE date_format(modifieddate,'%Y-%m-%d') = " + "'" + modifieddate + "'";
         }
-        // 작성자만 기입시 작성자 기준으로 DB 조회.
+        // 작성자 ID 만 기입시 작성자 기준으로 DB 조회.
         else if (user_id != null) {
             sql += " WHERE user_id = " + user_id;
         }
@@ -87,7 +88,7 @@ public class EventRepository {
         });
     }
 
-    // ID 값을 기준으로 DB 조회 메소드
+    // 일정 ID 값을 기준으로 DB 조회 메소드
     public Event findId(Long id) {
         String sql = "SELECT * FROM event WHERE id=?";
         return jdbcTemplate.query(sql, resultSet -> {
@@ -108,14 +109,14 @@ public class EventRepository {
         }, id);
     }
 
-    // ID 값을 기준으로 DB 데이터 수정 메소드
+    // 일정 ID 값을 기준으로 DB 데이터 수정 메소드
     public void update(Long id, EventRequestDto requestDto) {
         java.sql.Timestamp modifieddate = Timestamp.valueOf(LocalDateTime.now());
         String sql = "UPDATE event SET todo=?, modifieddate=?, startday =?, endday=?  WHERE id =?";
         jdbcTemplate.update(sql, requestDto.getTodo(), modifieddate, requestDto.getStartday(), requestDto.getEndday(), id);
     }
 
-    // ID 값을 기준으로 DB 데이터 삭제 메소드
+    // 일정 ID 값을 기준으로 DB 데이터 삭제 메소드
     public void delete(Long id) {
         String sql = "DELETE FROM event WHERE id=?";
         jdbcTemplate.update(sql, id);

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Setter
 @AllArgsConstructor
 @Builder
+// Client 에게 예외를 보내주기 위한 DTO 객체
 public class CustomErrorResponse {
     private CustomErrorCode status;
     private String statusMessage;

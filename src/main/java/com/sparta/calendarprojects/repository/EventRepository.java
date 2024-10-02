@@ -108,8 +108,8 @@ public class EventRepository {
     // ID 값을 기준으로 DB 데이터 수정 메소드
     public void update(Long id, EventRequestDto requestDto) {
         java.sql.Timestamp timeNow = Timestamp.valueOf(LocalDateTime.now());
-        String sql = "UPDATE event SET todo=?,creator=?,modifieddate=? WHERE id =?";
-        jdbcTemplate.update(sql, requestDto.getTodo(), requestDto.getCreator(), timeNow, id);
+        String sql = "UPDATE event SET todo=?,creator=?,modifieddate=?, startday =?, endday=?  WHERE id =?";
+        jdbcTemplate.update(sql, requestDto.getTodo(), requestDto.getCreator(), timeNow, requestDto.getStartday(), requestDto.getEndday(), id);
     }
 
     // ID 값을 기준으로 DB 데이터 삭제 메소드

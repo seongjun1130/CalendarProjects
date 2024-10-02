@@ -38,11 +38,15 @@ public class EventService {
                     Event saveEvent = eventRepository.save(event);
                     // Entity -> ResponseDto
                     return new EventResponseDto(saveEvent);
+                } else {
+                    throw new CustomException(END_DATE_BEFORE_START_DATE);
                 }
+            } else {
+                throw new CustomException(DATE_PARSE_ERROR);
             }
-            throw new CustomException(END_DATE_BEFORE_START_DATE);
+        } else {
+            throw new CustomException(NULL_INPUT);
         }
-        throw new CustomException(NULL_INPUT);
     }
 
     // 일정 조회 메소드. 파라미터 여부에 따른 결과가 달라짐.
@@ -62,20 +66,29 @@ public class EventService {
 
     // ID 기준의 DB 수정 메소드
     public Long updateEvent(Long id, EventRequestDto requestDto) {
+        boolean checkNotNull = Stream.of(requestDto.getTodo(), requestDto.getCreator(), requestDto.getPassword(), requestDto.getStartday(), requestDto.getEndday()).allMatch(Objects::nonNull);
         Event event = eventRepository.findId(id);
         // 해당 ID가 존재하면서 게시글 비밀번호와 동일한 시 정보 수정
-        if (event != null) if (requestDto.getPassword().equals(event.getPassword())) {
-            if (formatCheck(String.valueOf(requestDto.getStartday())) && formatCheck(String.valueOf(requestDto.getEndday()))) {
-                if (requestDto.getStartday().before(requestDto.getEndday())) {
-                    eventRepository.update(id, requestDto);
-                    return id;
+        if (event != null) {
+            if (checkNotNull) {
+                if (requestDto.getPassword().equals(event.getPassword())) {
+                    if (formatCheck(String.valueOf(requestDto.getStartday())) && formatCheck(String.valueOf(requestDto.getEndday()))) {
+                        if (requestDto.getStartday().before(requestDto.getEndday())) {
+                            eventRepository.update(id, requestDto);
+                            return id;
+                        } else {
+                            throw new CustomException(END_DATE_BEFORE_START_DATE);
+                        }
+                    } else {
+                        throw new CustomException(DATE_PARSE_ERROR);
+                    }
+                } else {
+                    throw new CustomException(PASSWORD_EXCEPTION);
                 }
+            } else {
+                throw new CustomException(NULL_INPUT);
             }
-            throw new CustomException(END_DATE_BEFORE_START_DATE);
         } else {
-            throw new CustomException(PASSWORD_EXCEPTION);
-        }
-        else {
             throw new CustomException(OUT_OF_RANGE);
         }
     }

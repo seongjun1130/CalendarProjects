@@ -12,7 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Event {
     private Long id;
-    private String creator;
+    private Long user_id;
+    private String username;
     private String todo;
     private String password;
     private java.sql.Timestamp createddate;
@@ -21,11 +22,9 @@ public class Event {
     private java.sql.Date endday;
 
     public Event(EventRequestDto requestDto) {
-        this.creator = requestDto.getCreator();
+        this.user_id = requestDto.getUser_id();
         this.todo = requestDto.getTodo();
         this.password = requestDto.getPassword();
-        this.createddate = requestDto.getCreateddate();
-        this.modifieddate = requestDto.getModifieddate();
         this.startday = requestDto.getStartday();
         this.endday = requestDto.getEndday();
     }

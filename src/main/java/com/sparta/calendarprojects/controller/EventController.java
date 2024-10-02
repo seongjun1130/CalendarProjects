@@ -22,15 +22,15 @@ public class EventController {
     }
 
     // 일정을 생성하는 컨트롤러 메소드
-    @PostMapping("/schedul")
+    @PostMapping("/schedul/")
     public EventResponseDto createEvent(@RequestBody EventRequestDto requestDto) {
         return eventService.createEvent(requestDto);
     }
 
     // 일정을 조회하는 컨트롤러 메소드 정보 기입여부에 따른 출력이 달라짐.
     @GetMapping("/schedul/")
-    public List<EventResponseDto> getAllEvents(@RequestParam(required = false) String creator, @RequestParam(required = false) String modifieddate) {
-        return eventService.getEventAll(creator, modifieddate);
+    public List<EventResponseDto> getAllEvents(@RequestParam(required = false) Long user_id, @RequestParam(required = false) String modifieddate) {
+        return eventService.getEventAll(user_id, modifieddate);
     }
 
     // ID 값을 기준으로 정보를 조회하는 컨트롤러 메소드.

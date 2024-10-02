@@ -13,7 +13,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class EventResponseDto {
     private Long id;
-    private String creator;
+    private Long user_id;
+    private String username;
     private String todo;
     private java.sql.Timestamp createddate;
     private java.sql.Timestamp modifieddate;
@@ -22,7 +23,8 @@ public class EventResponseDto {
 
     public EventResponseDto(Event event) {
         this.id = event.getId();
-        this.creator = event.getCreator();
+        this.user_id = event.getUser_id();
+        this.username = event.getUsername();
         this.todo = event.getTodo();
         this.createddate = event.getCreateddate();
         this.modifieddate = event.getModifieddate();
@@ -30,13 +32,14 @@ public class EventResponseDto {
         this.endday = event.getEndday();
     }
 
-    public EventResponseDto(Long id, String todo, Timestamp createddate, Timestamp modifieddate, Date startday, Date endday, String creator) {
+    public EventResponseDto(Long id, String username, String todo, Timestamp createddate, Timestamp modifieddate, Date startday, Date endday, Long user_id) {
         this.id = id;
         this.todo = todo;
         this.createddate = createddate;
         this.modifieddate = modifieddate;
         this.startday = startday;
         this.endday = endday;
-        this.creator = creator;
+        this.user_id = user_id;
+        this.username = username;
     }
 }

@@ -11,7 +11,7 @@ import lombok.NonNull;
 @NoArgsConstructor
 public class EventRequestDto {
     private Long id;
-    private String creator;
+    private Long user_id;
     private String todo;
     private String password;
     private java.sql.Timestamp createddate;

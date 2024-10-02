@@ -3,6 +3,7 @@ package com.sparta.calendarprojects.repository;
 import com.sparta.calendarprojects.dto.EventRequestDto;
 import com.sparta.calendarprojects.dto.EventResponseDto;
 import com.sparta.calendarprojects.entity.Event;
+import com.sparta.calendarprojects.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -22,10 +23,10 @@ public class EventRepository {
     }
 
     // DB 에 Entity 객체(Event) 정보 저장 메소드
-    public Event save(Event event) {
+    public Event save(Event event, User userinfo) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         // SQL 문 작성
-        String sql = "INSERT INTO event (todo, password,createddate,modifieddate,startday,endday,creator) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO event (todo, password,createddate,modifieddate,startday,endday,user_id,username) VALUES (?,?,?,?,?,?,?,?)";
         java.sql.Timestamp timeNow = Timestamp.valueOf(LocalDateTime.now());
         jdbcTemplate.update(con -> {
                     PreparedStatement preparedStatement = con.prepareStatement(sql,
@@ -37,8 +38,8 @@ public class EventRepository {
                     preparedStatement.setString(4, String.valueOf(timeNow));
                     preparedStatement.setString(5, event.getStartday().toString());
                     preparedStatement.setString(6, event.getEndday().toString());
-                    preparedStatement.setString(7, event.getCreator());
-
+                    preparedStatement.setString(7, event.getUser_id().toString());
+                    preparedStatement.setString(8, userinfo.getUsername());
                     return preparedStatement;
                 },
                 keyHolder);
@@ -47,25 +48,26 @@ public class EventRepository {
         event.setId(id);
         event.setCreateddate(timeNow);
         event.setModifieddate(timeNow);
+        event.setUsername(userinfo.getUsername());
         return event;
     }
 
     // Client 에서 보내온 파라미터값에 따른 DB 조회 메소드
     // 조건에 따른 WHERE 절 변화
-    public List<EventResponseDto> findAll(String creator, String modifieddate) {
+    public List<EventResponseDto> findAll(Long user_id, String modifieddate) {
         // 둘다 기입하지 않았을시 모든 일정 조회
         String sql = "SELECT * FROM event";
         // 작성자, 수정일을 둘다 기입했을시.
-        if (creator != null && modifieddate != null) {
-            sql += " WHERE creator = " + "'" + creator + "'" + " OR date_format(modifieddate,'%Y-%m-%d') = " + "'" + modifieddate + "'";
+        if (user_id != null && modifieddate != null) {
+            sql += " WHERE user_id = " + user_id + " OR date_format(modifieddate,'%Y-%m-%d') = " + "'" + modifieddate + "'";
         }
         // 수정일만 기입시 수정일 기준으로 DB 조회.
         else if (modifieddate != null) {
             sql += " WHERE date_format(modifieddate,'%Y-%m-%d') = " + "'" + modifieddate + "'";
         }
         // 작성자만 기입시 작성자 기준으로 DB 조회.
-        else if (creator != null) {
-            sql += " WHERE creator = " + "'" + creator + "'";
+        else if (user_id != null) {
+            sql += " WHERE user_id = " + user_id;
         }
         sql += " ORDER BY modifieddate DESC";
         return jdbcTemplate.query(sql, new RowMapper<EventResponseDto>() {
@@ -78,8 +80,9 @@ public class EventRepository {
                 java.sql.Timestamp modifieddate = rs.getTimestamp("modifieddate");
                 java.sql.Date startday = rs.getDate("startday");
                 java.sql.Date endday = rs.getDate("endday");
-                String creator = rs.getString("creator");
-                return new EventResponseDto(id, todo, createddate, modifieddate, startday, endday, creator);
+                Long user_id = rs.getLong("user_id");
+                String username = rs.getString("username");
+                return new EventResponseDto(id, username, todo, createddate, modifieddate, startday, endday, user_id);
             }
         });
     }
@@ -97,7 +100,7 @@ public class EventRepository {
                 event.setModifieddate(resultSet.getTimestamp("modifieddate"));
                 event.setStartday(resultSet.getDate("startday"));
                 event.setEndday(resultSet.getDate("endday"));
-                event.setCreator(resultSet.getString("creator"));
+                event.setUser_id(resultSet.getLong("user_id"));
                 return event;
             } else {
                 return null;
@@ -107,9 +110,9 @@ public class EventRepository {
 
     // ID 값을 기준으로 DB 데이터 수정 메소드
     public void update(Long id, EventRequestDto requestDto) {
-        java.sql.Timestamp timeNow = Timestamp.valueOf(LocalDateTime.now());
-        String sql = "UPDATE event SET todo=?,creator=?,modifieddate=?, startday =?, endday=?  WHERE id =?";
-        jdbcTemplate.update(sql, requestDto.getTodo(), requestDto.getCreator(), timeNow, requestDto.getStartday(), requestDto.getEndday(), id);
+        java.sql.Timestamp modifieddate = Timestamp.valueOf(LocalDateTime.now());
+        String sql = "UPDATE event SET todo=?, modifieddate=?, startday =?, endday=?  WHERE id =?";
+        jdbcTemplate.update(sql, requestDto.getTodo(), modifieddate, requestDto.getStartday(), requestDto.getEndday(), id);
     }
 
     // ID 값을 기준으로 DB 데이터 삭제 메소드

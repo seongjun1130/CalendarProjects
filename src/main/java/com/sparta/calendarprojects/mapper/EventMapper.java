@@ -1,10 +1,8 @@
 package com.sparta.calendarprojects.mapper;
 
 import com.sparta.calendarprojects.dto.EventResponseDto;
-import com.sparta.calendarprojects.dto.PageResponseDto;
 import com.sparta.calendarprojects.entity.Event;
 import org.mapstruct.Mapper;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 

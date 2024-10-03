@@ -83,7 +83,7 @@ public class EventRepository {
                 java.sql.Date endday = rs.getDate("endday");
                 Long user_id = rs.getLong("user_id");
                 String username = rs.getString("username");
-                return new EventResponseDto(id, username, todo, createddate, modifieddate, startday, endday, user_id);
+                return new EventResponseDto(id,  user_id, username, todo, createddate, modifieddate, startday, endday);
             }
         });
     }

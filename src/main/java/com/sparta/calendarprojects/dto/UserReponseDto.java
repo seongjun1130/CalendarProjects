@@ -2,12 +2,14 @@ package com.sparta.calendarprojects.dto;
 
 import com.sparta.calendarprojects.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserReponseDto {
     private Long id;
     private String username;

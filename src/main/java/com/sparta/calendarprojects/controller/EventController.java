@@ -7,6 +7,7 @@ import com.sparta.calendarprojects.entity.Event;
 import com.sparta.calendarprojects.info.PageInfo;
 import com.sparta.calendarprojects.mapper.EventMapper;
 import com.sparta.calendarprojects.service.EventService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -42,7 +43,7 @@ public class EventController {
 
     // 일정을 생성하는 컨트롤러 메소드
     @PostMapping("/schedul/")
-    public EventResponseDto createEvent(@RequestBody EventRequestDto requestDto) {
+    public EventResponseDto createEvent(@RequestBody @Valid EventRequestDto requestDto) {
         return eventService.createEvent(requestDto);
     }
 
@@ -61,7 +62,7 @@ public class EventController {
     // ID 값을 기준으로 정보를 수정하는 컨트롤러 메소드
     // DTO 를 Body 로 받는 이유는 URL 이 아닌 Body 로 받으면서 보안성 향상.
     @PutMapping("/schedul/")
-    public Long updateEvent(@RequestParam Long id, @RequestBody EventRequestDto requestDto) {
+    public Long updateEvent(@RequestParam Long id, @RequestBody @Valid EventRequestDto requestDto) {
         return eventService.updateEvent(id, requestDto);
     }
 

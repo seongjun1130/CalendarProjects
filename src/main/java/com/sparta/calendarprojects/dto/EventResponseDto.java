@@ -33,15 +33,4 @@ public class EventResponseDto {
         this.startday = event.getStartday();
         this.endday = event.getEndday();
     }
-
-    public EventResponseDto(Long id, String username, String todo, Timestamp createddate, Timestamp modifieddate, Date startday, Date endday, Long user_id) {
-        this.id = id;
-        this.todo = todo;
-        this.createddate = createddate;
-        this.modifieddate = modifieddate;
-        this.startday = startday;
-        this.endday = endday;
-        this.user_id = user_id;
-        this.username = username;
-    }
 }

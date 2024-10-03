@@ -1,6 +1,6 @@
 package com.sparta.calendarprojects.service;
 
-import com.sparta.calendarprojects.customexception.CustomException;
+import com.sparta.calendarprojects.exception.CustomException;
 import com.sparta.calendarprojects.dto.EventRequestDto;
 import com.sparta.calendarprojects.dto.EventResponseDto;
 import com.sparta.calendarprojects.entity.Event;
@@ -12,14 +12,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Member;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
-import static com.sparta.calendarprojects.customexception.CustomErrorCode.*;
+import static com.sparta.calendarprojects.exception.CustomErrorCode.*;
 
 
 // 일정관련 비즈니스 로직을 지닌 서비스 클래스
@@ -44,30 +41,24 @@ public class EventService {
 
     // 일정 생성 메소드.
     public EventResponseDto createEvent(EventRequestDto requestDto) {
-        boolean checkNotNull = Stream.of(requestDto.getTodo(), requestDto.getUser_id(), requestDto.getPassword(), requestDto.getStartday(), requestDto.getEndday()).allMatch(Objects::nonNull);
         User userinfo = userRepository.findId(requestDto.getUser_id());
         // 해당 유저가 존재하지 않는 경우
         if (userinfo != null) {
-            // 사용자가 NULL 값을 입력 했을 경우
-            if (checkNotNull) {
-                // 해당 일자가 유효한지 검사 (Ex : 2024-02-30(false))
-                if (formatCheck(String.valueOf(requestDto.getStartday())) && formatCheck(String.valueOf(requestDto.getEndday()))) {
-                    // 일정종료일이 시작일 보다 빠를경우 (Ex : 2024-09-30 ~ 2024-08-30)
-                    if (requestDto.getStartday().before(requestDto.getEndday())) {
-                        // RequestDto -> Entity
-                        Event event = new Event(requestDto);
-                        // DB 저장
-                        Event saveEvent = eventRepository.save(event, userinfo);
-                        // Entity -> ResponseDto
-                        return new EventResponseDto(saveEvent);
-                    } else {
-                        throw new CustomException(END_DATE_BEFORE_START_DATE);
-                    }
+            // 해당 일자가 유효한지 검사 (Ex : 2024-02-30(false))
+            if (formatCheck(String.valueOf(requestDto.getStartday())) && formatCheck(String.valueOf(requestDto.getEndday()))) {
+                // 일정종료일이 시작일 보다 빠를경우 (Ex : 2024-09-30 ~ 2024-08-30)
+                if (requestDto.getStartday().before(requestDto.getEndday())) {
+                    // RequestDto -> Entity
+                    Event event = new Event(requestDto);
+                    // DB 저장
+                    Event saveEvent = eventRepository.save(event, userinfo);
+                    // Entity -> ResponseDto
+                    return new EventResponseDto(saveEvent);
                 } else {
-                    throw new CustomException(DATE_PARSE_ERROR);
+                    throw new CustomException(END_DATE_BEFORE_START_DATE);
                 }
             } else {
-                throw new CustomException(NULL_INPUT);
+                throw new CustomException(DATE_PARSE_ERROR);
             }
         } else {
             throw new CustomException(USER_NOT_FOUND);
@@ -92,33 +83,27 @@ public class EventService {
 
     // ID 기준의 DB 수정 메소드
     public Long updateEvent(Long id, EventRequestDto requestDto) {
-        boolean checkNotNull = Stream.of(requestDto.getTodo(), requestDto.getUser_id(), requestDto.getPassword(), requestDto.getStartday(), requestDto.getEndday()).allMatch(Objects::nonNull);
         Event event = eventRepository.findId(id);
         // 글을 작성한 유저가 접근했는지 검사하기위한 UserInfo 객체 생성
         User userinfo = userRepository.findId(requestDto.getUser_id());
         // 해당 ID 일정이 존재하는 경우
-        if (event != null) {
-            // 사용자가 NULL 값 을 입력했는지
-            if (checkNotNull) {
-                // 접근 User 가 일정을 작성한 유저 이면서 게시글에 대한 비밀번호가 일치하는지?
-                if (requestDto.getPassword().equals(event.getPassword()) && userinfo.getId().equals(event.getUser_id())) {
-                    // 해당 일자가 유효한지 검사 (Ex : 2024-02-30(false))
-                    if (formatCheck(String.valueOf(requestDto.getStartday())) && formatCheck(String.valueOf(requestDto.getEndday()))) {
-                        // 일정종료일이 시작일 보다 빠를경우 (Ex : 2024-09-30 ~ 2024-08-30)
-                        if (requestDto.getStartday().before(requestDto.getEndday())) {
-                            eventRepository.update(id, requestDto);
-                            return id;
-                        } else {
-                            throw new CustomException(END_DATE_BEFORE_START_DATE);
-                        }
+        if (event != null || userinfo != null) {
+            // 접근 User 가 일정을 작성한 유저 이면서 게시글에 대한 비밀번호가 일치하는지?
+            if (requestDto.getPassword().equals(event.getPassword()) && userinfo.getId().equals(event.getUser_id())) {
+                // 해당 일자가 유효한지 검사 (Ex : 2024-02-30(false))
+                if (formatCheck(String.valueOf(requestDto.getStartday())) && formatCheck(String.valueOf(requestDto.getEndday()))) {
+                    // 일정종료일이 시작일 보다 빠를경우 (Ex : 2024-09-30 ~ 2024-08-30)
+                    if (requestDto.getStartday().before(requestDto.getEndday())) {
+                        eventRepository.update(id, requestDto);
+                        return id;
                     } else {
-                        throw new CustomException(DATE_PARSE_ERROR);
+                        throw new CustomException(END_DATE_BEFORE_START_DATE);
                     }
                 } else {
-                    throw new CustomException(USER_INFO_MISMATCH);
+                    throw new CustomException(DATE_PARSE_ERROR);
                 }
             } else {
-                throw new CustomException(NULL_INPUT);
+                throw new CustomException(USER_INFO_MISMATCH);
             }
         } else {
             throw new CustomException(OUT_OF_RANGE);
@@ -156,6 +141,5 @@ public class EventService {
             return false;
         }
     }
-
 
 }

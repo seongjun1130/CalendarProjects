@@ -1,7 +1,6 @@
 package com.sparta.calendarprojects.repository;
 
 import com.sparta.calendarprojects.dto.UserReponseDto;
-import com.sparta.calendarprojects.dto.UserRequestDto;
 import com.sparta.calendarprojects.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -79,15 +78,15 @@ public class UserRepository {
     }
 
     // 단일 User Data 를 DB 상에서 수정하는 메소드
-    public void update(Long id, UserRequestDto requestDto) {
+    public void update(Long id, String username) {
         // 수정시간 입력을 위한 Timestamp 생성
         Timestamp update_date = Timestamp.valueOf(LocalDateTime.now());
         // 해당 ID를 가진 UserData 수정
         String sql = "UPDATE user SET username = ?, update_date = ? WHERE id = ?";
-        jdbcTemplate.update(sql, requestDto.getUsername(), update_date, id);
+        jdbcTemplate.update(sql, username, update_date, id);
         // event Table 에 일정을 가지고 있을 경우 변경값으로 함께 변경
         sql = "UPDATE event SET username = ? WHERE user_id = ?";
-        jdbcTemplate.update(sql, requestDto.getUsername(), id);
+        jdbcTemplate.update(sql, username, id);
     }
 
     // 단일 User Data 를 DB 상에서 삭제하는 메소드

@@ -1,9 +1,8 @@
-package com.sparta.calendarprojects.customexception;
+package com.sparta.calendarprojects.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -12,13 +11,11 @@ import org.springframework.http.HttpStatus;
 public class CustomException extends RuntimeException {
     private CustomErrorCode customErrorCode;
     private String detailMessage;
-    private HttpStatus httpStatus;
 
     public CustomException(CustomErrorCode customErrorCode) {
         super(customErrorCode.getStatusMessage());
         this.customErrorCode = customErrorCode;
         this.detailMessage = customErrorCode.getStatusMessage();
-        this.httpStatus = HttpStatus.BAD_REQUEST;
     }
 
 }

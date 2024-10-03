@@ -115,7 +115,7 @@ public class EventService {
         Event event = eventRepository.findId(id);
         User userinfo = userRepository.findId(requestDto.getUser_id());
         // 해당 일정 ID가 존재하는지?
-        if (event != null)
+        if (event != null || userinfo != null)
             // 접근한 User 가 일정을 작성한 User 이면서 비밀번호가 일치하는지?
             if (requestDto.getPassword().equals(event.getPassword()) && userinfo.getId().equals(event.getUser_id())) {
                 eventRepository.delete(id);

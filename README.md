@@ -84,6 +84,8 @@
 ## Communication
 - ### Main blog
 https://velog.io/@lionjojo/posts
+- ### project Main Documentation
+https://velog.io/@lionjojo/Spring-Calendar
 - ### project troubleshooting
 https://velog.io/@lionjojo/Spring-Calendar-%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85
 

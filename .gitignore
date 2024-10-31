@@ -35,3 +35,5 @@ out/
 
 ### VS Code ###
 .vscode/
+# DB priperties
+src/main/resources/application-secret.properties
